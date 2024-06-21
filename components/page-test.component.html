@@ -1,0 +1,24 @@
+<template id="test-page">
+  <h2>Test Page</h2>
+  <section>
+    <button data-on="click:onClick('RED')">RED</button>
+    <button data-on="click:onClick('BLUE')">BLUE</button>
+  </section>
+  <output-color color="BLACK" data-bind-color="color" data-on="colorReset:onReset($event)"></output-color>
+</template>
+<script>
+  class TestPage extends CustomElement {
+    static component = Object.freeze({
+      selector: 'test-page'
+    });
+    
+    onClick(color) {
+      this.state.setState({ color });
+    }
+
+    onReset(color) {
+      this.state.setState({ color });
+    }
+  };
+  TestPage.componentInit();
+</script>

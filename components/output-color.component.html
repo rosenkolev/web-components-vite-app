@@ -1,0 +1,29 @@
+<template id="output-color">
+  <style>
+    :host {
+      display: block;
+    }
+  </style>
+  <p>
+    COLOR-NAME:
+    <b data-bind="color" data-css="color:color"></b>
+  </p>
+  <button data-on="click:onReset()">Reset To Black</button>
+</template>
+<script>
+  class OutputColor extends CustomElement {
+    static component = Object.freeze({
+      selector: 'output-color'
+    });
+
+    static get observedAttributes() { return ['color']; }
+
+    onReset() {
+      this.dispatchEvent(
+        new CustomEvent('colorReset', { detail: 'BLACK', composed: true })
+      );
+    }
+  };
+
+  OutputColor.componentInit();
+</script>

@@ -1,0 +1,60 @@
+<template id="appRouter">
+  <slot></slot>
+</template>
+<script>
+  class AppRouter extends CustomElement {
+    static component = Object.freeze({
+      selector: 'app-router',
+      templateId: 'appRouter'
+    });
+
+    #routes = [];
+    connectedCallback() {
+      this.root.querySelector('slot').addEventListener('slotchange', event => this.onSlotChange(event));
+
+      document.body.addEventListener('routeChange', event => (this.onRouteChange(event.detail)), false);
+
+      window.addEventListener('popstate', (event) => {
+        event.preventDefault();
+        this.onRouteChange(window.location.pathname);
+      });
+    }
+
+    onRouteChange(path) {
+      this.#routes.forEach(({ route, element }) => {
+        element.style.display = path === route ? 'block' : 'none';
+      });
+    }
+
+    onSlotChange(event) {
+      this.#routes = [];
+      // get all assigned elements, get the route attribute and store it in the #routes array.
+      event.target.assignedElements().forEach(element => {
+        const route = element.dataset.route;
+        if (route) {
+          this.#routes.push({ route, element });
+        }
+      });
+
+      this.onRouteChange(window.location.pathname);
+    }
+  };
+  AppRouter.componentInit();
+</script>
+<script>
+  class AppRouterLink extends HTMLAnchorElement {
+    connectedCallback() {
+      this.addEventListener('click', e => {
+        e.preventDefault();
+        const link = this.getAttribute('href');
+        const params = this.dataset.params;
+        const url = params ? `${link}?${params}` : link;
+
+        window.history.pushState({}, '', url);
+        this.dispatchEvent(new CustomEvent('routeChange', { detail: link, composed: true, bubbles: true }));
+      });
+    }
+  }
+
+  core.registerComponent('router-link', AppRouterLink, [], 'a');
+</script>

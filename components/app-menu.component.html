@@ -1,0 +1,33 @@
+<template id="app-menu">
+  <style>
+    ul {
+      display: flex;
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+
+    li {
+      margin: 0 10px;
+    }
+  </style>
+  <nav>
+    <ul>
+      <li>
+        <a is="router-link" href="/">Home</a>
+      </li>
+      <li>
+        <a is="router-link" href="/test">Test</a>
+      </li>
+    </ul>
+  </nav>
+</template>
+<script>
+  class AppMenu extends CustomElement {
+    static component = Object.freeze({
+      selector: 'app-menu',
+      dependencies: ['router-link']
+    });
+  }
+  AppMenu.componentInit();
+</script>

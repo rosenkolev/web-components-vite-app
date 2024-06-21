@@ -1,0 +1,38 @@
+<template id="app-root">
+  <style>
+    :host {
+      display: block;
+      padding: 5px;
+      border: 1px solid #CCC;
+    }
+
+    header {
+      padding: 10px 5px;
+    }
+  </style>
+  <main>
+    <header>
+      <h1 data-bind="title"></h1>
+    </header>
+    <app-menu></app-menu>
+    <app-router>
+      <home-page data-route="/"></home-page>
+      <test-page data-route="/test"></test-page>
+    </app-router>
+  </main>
+</template>
+<script>
+  class AppRoot extends CustomElement {
+    static component = Object.freeze({
+      selector: 'app-root',
+      dependencies: ['app-router', 'home-page', 'test-page']
+    });
+
+    connectedCallback() {
+      this.state.setState({
+        title: 'My Application'
+      })
+    }
+  }
+  AppRoot.componentInit();
+</script>

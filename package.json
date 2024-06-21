@@ -1,0 +1,11 @@
+{
+  "name": "vite-web-components",
+  "version": "1.0.0",
+  "scripts": {
+    "start": "vite",
+    "build": "vite build"
+  },
+  "devDependencies": {
+    "vite": "5.1.7"
+  }
+}
