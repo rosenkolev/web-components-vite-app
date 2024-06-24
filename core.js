@@ -79,10 +79,10 @@ class StateManager {
   }
 
   setState(newState) {
-    Object.entries(newState).forEach(([key, value]) => (this.setStateValue(key, value)));
+    Object.entries(newState).forEach(([key, value]) => (this.set(key, value)));
   }
 
-  setStateValue(key, value) {
+  set(key, value) {
     this.#state[key] =
       core.isObject(this.#state[key]) && core.isObject(value)
         ? Object.assign({}, this.#state[key], value)
@@ -133,7 +133,8 @@ class CustomElement extends HTMLElement {
   attributeChangedCallback(name, oldValue, newValue) {
     if (oldValue !== newValue) {
       core.isDebug() && console.debug(`input: ${name} ${oldValue} -> ${newValue}`);
-      this.state.setStateValue(name, newValue);
+      this.state.set(name, newValue);
+      this.onAttributeChanged && this.onAttributeChanged(name, oldValue, newValue);
     }
   }
 

@@ -9,20 +9,45 @@
     });
 
     #routes = [];
+    #queryParamsListeners = {};
+    #baseUrl = document.baseURI.replace(window.location.origin, '');
+    #getBaseLink = (link) => this.#baseUrl + (link[0] === '/' ? link.substring(1) : link);
+    #addLinkTrailingSlash = (link) => link[link.length - 1] === '/' ? link : link + '/';
+
     connectedCallback() {
       this.root.querySelector('slot').addEventListener('slotchange', event => this.onSlotChange(event));
 
-      document.body.addEventListener('routeChange', event => (this.onRouteChange(event.detail)), false);
+      document.body.addEventListener('routeChange', ({ detail }) => {
+        const link = this.#getBaseLink(detail.link);
+        const url = detail.params ? `${link}?${detail.params}` : link;
+        window.history.pushState({}, '', url);
+        this.onRouteChange(link, detail.params)
+      }, false);
 
       window.addEventListener('popstate', (event) => {
         event.preventDefault();
-        this.onRouteChange(window.location.pathname);
+        this.#setCurrentRoute();
       });
     }
 
-    onRouteChange(path) {
+    onRouteChange(path, params) {
+      path = this.#addLinkTrailingSlash(path);
+      const paramsArray = params ? params.split('&').reduce((acc, param) => {
+        const [key, value] = param.split('=');
+        acc[key] = value;
+        return acc;
+      }, {}) : {};
+
       this.#routes.forEach(({ route, element }) => {
         element.style.display = path === route ? 'block' : 'none';
+
+        if (path === route && element.__ROUTE_PARAM_KEYS && element.onRouteParamsChange) {
+          const elementParamsMap = element.__ROUTE_PARAM_KEYS.reduce((agg, key) => {
+            agg[key] = paramsArray[key];
+            return agg;
+          }, {});
+          element.onRouteParamsChange(route, elementParamsMap);
+        }
       });
     }
 
@@ -30,13 +55,22 @@
       this.#routes = [];
       // get all assigned elements, get the route attribute and store it in the #routes array.
       event.target.assignedElements().forEach(element => {
-        const route = element.dataset.route;
-        if (route) {
+        const dataRoute = element.dataset.route;
+        if (dataRoute) {
+          const route = this.#addLinkTrailingSlash(this.#getBaseLink(dataRoute));
           this.#routes.push({ route, element });
+        }
+
+        if (element.dataset.routeParam) {
+          element.__ROUTE_PARAM_KEYS = element.dataset.routeParam.split(',');
         }
       });
 
-      this.onRouteChange(window.location.pathname);
+      this.#setCurrentRoute();
+    }
+
+    #setCurrentRoute() {
+      this.onRouteChange(window.location.pathname, window.location.search.substring(1));
     }
   };
   AppRouter.componentInit();
@@ -47,11 +81,9 @@
       this.addEventListener('click', e => {
         e.preventDefault();
         const link = this.getAttribute('href');
-        const params = this.dataset.params;
-        const url = params ? `${link}?${params}` : link;
-
-        window.history.pushState({}, '', url);
-        this.dispatchEvent(new CustomEvent('routeChange', { detail: link, composed: true, bubbles: true }));
+        if (link) {
+          this.dispatchEvent(new CustomEvent('routeChange', { detail: { link, params: this.dataset.params }, composed: true, bubbles: true }));
+        }
       });
     }
   }

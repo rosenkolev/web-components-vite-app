@@ -9,9 +9,14 @@
 <script>
   class TestPage extends CustomElement {
     static component = Object.freeze({
-      selector: 'test-page'
+      selector: 'test-page',
     });
-    
+
+    onRouteParamsChange(route, params) {
+      const color = params.c || 'BLACK';
+      this.state.setState({ color });
+    }
+
     onClick(color) {
       this.state.setState({ color });
     }

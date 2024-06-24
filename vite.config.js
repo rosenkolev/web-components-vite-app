@@ -11,8 +11,8 @@ function injectFilesInIndexHtml(options) {
       config = resolvedConfig;
     },
     transformIndexHtml: {
-      enforce: 'pre',
-      transform(html) {
+      order: 'pre',
+      handler(html) {
         const isDirectory =
           options.path.endsWith('/') ||
           !options.path.split('/').pop().includes('.');
@@ -51,8 +51,23 @@ function injectFilesInIndexHtml(options) {
 }
 
 export default defineConfig({
+  base: '/web-components-vite-app',
   plugins: [
     injectFilesInIndexHtml({ path: 'core.js', at: 'head' }),
     injectFilesInIndexHtml({ path: 'components/', at: 'body-pre' }),
+    injectBasePath()
   ],
 });
+
+function injectBasePath() {
+  let basePath = '/';
+  return {
+    name: 'inject-base-path',
+    configResolved(config) {
+      basePath = config.base;
+    },
+    transformIndexHtml(html) {
+      return html.replace(/<base href="\/?"\s*\/?>/, `<base href="${basePath}" />`);
+    },
+  };
+}
