@@ -36,3 +36,19 @@
   }
   AppRoot.componentInit();
 </script>
+<script type="text/typescript">
+  import { CustomElement } from '../core/custom-element';
+
+  class AppRoot22 extends CustomElement {
+    static readonly component = {
+      selector: 'app-root',
+      dependencies: ['app-router', 'home-page', 'test-page']
+    };
+
+    connectedCallback(): void {
+      this.state.setState({
+        title: 'My Application'
+      })
+    }
+  }
+</script>

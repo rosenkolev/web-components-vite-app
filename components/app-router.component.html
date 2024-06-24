@@ -2,6 +2,7 @@
   <slot></slot>
 </template>
 <script>
+  const appRouterBasePath = document.getElementsByTagName('base')[0].getAttribute('href') || '';
   class AppRouter extends CustomElement {
     static component = Object.freeze({
       selector: 'app-router',
@@ -30,7 +31,7 @@
       this.#routes = [];
       // get all assigned elements, get the route attribute and store it in the #routes array.
       event.target.assignedElements().forEach(element => {
-        const route = element.dataset.route;
+        const route = appRouterBasePath + element.dataset.route;
         if (route) {
           this.#routes.push({ route, element });
         }
@@ -49,9 +50,8 @@
         const link = this.getAttribute('href');
         const params = this.dataset.params;
         const url = params ? `${link}?${params}` : link;
-
-        window.history.pushState({}, '', url);
-        this.dispatchEvent(new CustomEvent('routeChange', { detail: link, composed: true, bubbles: true }));
+        window.history.pushState({}, '', appRouterBasePath + url);
+        this.dispatchEvent(new CustomEvent('routeChange', { detail: appRouterBasePath + link, composed: true, bubbles: true }));
       });
     }
   }
