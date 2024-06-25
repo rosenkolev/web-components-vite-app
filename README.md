@@ -1,4 +1,4 @@
-# Wec Components Application
+# Web Components Application
 
 An web application using only browser native technologies and no frameworks.
 
