@@ -25,12 +25,13 @@
     </ul>
   </nav>
 </template>
-<script>
-  class AppMenu extends CustomElement {
+<script type="module">
+  import core, { CustomElement } from 'core';
+
+  core.registerComponent(class extends CustomElement {
     static component = Object.freeze({
       selector: 'app-menu',
       dependencies: ['router-link']
     });
-  }
-  AppMenu.componentInit();
+  });
 </script>

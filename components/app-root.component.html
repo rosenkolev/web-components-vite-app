@@ -21,7 +21,9 @@
     </app-router>
   </main>
 </template>
-<script>
+<script type="module">
+  import { CustomElement } from 'core';
+
   class AppRoot extends CustomElement {
     static component = Object.freeze({
       selector: 'app-root',

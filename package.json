@@ -3,9 +3,12 @@
   "version": "1.0.0",
   "scripts": {
     "start": "vite",
-    "build": "vite build"
+    "build": "vite build",
+    "test": "vitest"
   },
   "devDependencies": {
-    "vite": "5.1.7"
+    "happy-dom": "^14.12.3",
+    "vite": "5.1.7",
+    "vitest": "^1.6.0"
   }
 }

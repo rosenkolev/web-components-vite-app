@@ -10,20 +10,11 @@
   </p>
   <button data-on="click:onReset()">Reset To Black</button>
 </template>
-<script>
-  class OutputColor extends CustomElement {
-    static component = Object.freeze({
-      selector: 'output-color'
-    });
-
-    static get observedAttributes() { return ['color']; }
-
-    onReset() {
-      this.dispatchEvent(
-        new CustomEvent('colorReset', { detail: 'BLACK', composed: true })
-      );
-    }
-  };
-
-  OutputColor.componentInit();
+<script type="module">
+  /** 
+   * The jsdom and happy-dom libraries do not support the dynamic import of <script type="module">.
+   * so we need to separate the html and js part in order to write unit tests. In a real browser environment,
+   * we can extract the js part and put it inject it in the document.
+   */
+  import '/components/output-color.component.js';
 </script>

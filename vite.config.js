@@ -2,7 +2,7 @@ import { defineConfig } from 'vite';
 import fs from 'node:fs';
 import path from 'node:path';
 
-/** @param options {{ path: string, at: 'head' | 'body' | 'body-pre' }} */
+/** @param options {{ path: string, at: 'head' | 'body' | 'body-pre', exclude: [] }} */
 function injectFilesInIndexHtml(options) {
   let config;
   return {
@@ -13,17 +13,15 @@ function injectFilesInIndexHtml(options) {
     transformIndexHtml: {
       order: 'pre',
       handler(html) {
-        const isDirectory =
-          options.path.endsWith('/') ||
-          !options.path.split('/').pop().includes('.');
-        const basePath = isDirectory
-          ? path.resolve(config.root, options.path)
-          : config.root;
+        const isDirectory = options.path.endsWith('/') || !options.path.split('/').pop().includes('.');
+        const basePath = isDirectory ? path.resolve(config.root, options.path) : config.root;
         const files = isDirectory ? fs.readdirSync(basePath) : [options.path];
-        const filesContent = files.map((file) => {
+        const excludes = options.exclude && options.exclude.map(x => new RegExp(x, 'gm')) || [];
+        const filesContent = files.filter(file => !excludes.some(x => x.test(file))).map((file) => {
+          console.log('file', file);
           const pathToFile = path.resolve(basePath, file);
-
           const txt = fs.readFileSync(pathToFile);
+
           switch (file.split('.').pop()) {
             case 'css':
               return `<style>${txt}</style>`;
@@ -52,9 +50,14 @@ function injectFilesInIndexHtml(options) {
 
 export default defineConfig({
   base: '/web-components-vite-app',
+  test: { environment: "happy-dom" },
+  resolve: {
+    alias: {
+      'core': path.resolve(__dirname, 'core.js'),
+    }
+  },
   plugins: [
-    injectFilesInIndexHtml({ path: 'core.js', at: 'head' }),
-    injectFilesInIndexHtml({ path: 'components/', at: 'body-pre' }),
+    injectFilesInIndexHtml({ path: 'components/', at: 'body-pre', exclude: ['\.js$'] }),
     injectBasePath()
   ],
 });

@@ -1,7 +1,9 @@
 <template id="home-page">
   <h2>Home Page</h2>
 </template>
-<script>
+<script type="module">
+  import { CustomElement } from 'core';
+
   class HomePage extends CustomElement {
     static component = Object.freeze({
       selector: 'home-page'

@@ -1,7 +1,9 @@
 <template id="appRouter">
   <slot></slot>
 </template>
-<script>
+<script type="module">
+  import { CustomElement } from 'core';
+
   class AppRouter extends CustomElement {
     static component = Object.freeze({
       selector: 'app-router',
@@ -75,7 +77,8 @@
   };
   AppRouter.componentInit();
 </script>
-<script>
+<script type="module">
+  import core from 'core';
   class AppRouterLink extends HTMLAnchorElement {
     connectedCallback() {
       this.addEventListener('click', e => {
